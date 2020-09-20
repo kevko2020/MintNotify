@@ -88,7 +88,7 @@ def mintLogin():
     mfa_input_callback=None,  # A callback accepting a single argument (the prompt)
                               # which returns the user-inputted 2FA code. By default
                               # the default Python `input` function is used.
-    session_path=folderName, # Directory that the Chrome persistent session will be written/read from.
+    session_path=None, # Directory that the Chrome persistent session will be written/read from.
                        # To avoid the 2FA code being asked for multiple times, you can either set
                        # this parameter or log in by hand in Chrome under the same user this runs
                        # as.
