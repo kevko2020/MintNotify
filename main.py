@@ -1,6 +1,5 @@
 import mintapi
 import os
-import pyotp
 import smtplib, ssl
 import sqlite3 as sl
 import datetime
@@ -119,7 +118,7 @@ def sendEmail(accountName, fromEmail, password, toEmail, message, number):
            {}<br>
     """.format(message)
 
-    if number is not "":
+    if number != "":
         html +="""\
         Contact us at <a href="tel:{}">{}</a>
         """.format(number.strip('-'), number)
