@@ -11,7 +11,7 @@ import logging
 accountNames = os.environ.get('ACCOUNT_NAMES', None)
 thresholdValues = os.environ.get('THRESHOLD_VALUES', None)
 accountMessages = os.environ.get('ACCOUNT_MESSAGES', None)
-accountContacts = os.environ.get('ACCOUNT_CONTACTS' None)
+accountContacts = os.environ.get('ACCOUNT_CONTACTS', None)
 mintEmail = os.environ.get('MINT_EMAIL', None)
 mintPassword = os.environ.get('MINT_PASSWORD', None)
 mfaToken = os.environ.get('MFA_TOKEN', None)

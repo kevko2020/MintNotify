@@ -8,10 +8,7 @@ mintapi==1.44
 mock==4.0.2
 numpy==1.19.2
 oathtool==2.2.0
-pandas==1.1.2
 path==15.0.0
-pycodestyle==2.6.0
-pyotp==2.4.0
 python-dateutil==2.8.1
 pytz==2020.1
 requests==2.24.0
