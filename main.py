@@ -82,8 +82,8 @@ def mintLogin():
     mfa_method='soft-token',  # Can be 'sms' (default), 'email', or 'soft-token'.
                        # if mintapi detects an MFA request, it will trigger the requested method
                        # and prompt on the command line.
-    mfa_token=mfa_token,
-    headless=False,  # Whether the chromedriver should work without opening a
+    mfa_token=mfaToken,
+    headless=True,  # Whether the chromedriver should work without opening a
                      # visible window (useful for server-side deployments)
     mfa_input_callback=None,  # A callback accepting a single argument (the prompt)
                               # which returns the user-inputted 2FA code. By default
