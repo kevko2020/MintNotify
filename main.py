@@ -5,6 +5,7 @@ import sqlite3 as sl
 import datetime
 import pytz
 import logging
+import sqlalchemy as db
 
 # Env Vars
 accountNames = os.environ.get('ACCOUNT_NAMES', None)
@@ -28,7 +29,19 @@ folderName = os.path.join(dirname, 'session')
 port = 465  # For SSL
 context = ssl.create_default_context()
 
-con = sl.connect('money.db')
+# con = sl.connect('money.db')
+# new db
+engine = db.create_engine(os.getenv("DATABASE_URL"))
+db = scoped_session(sessionmaker(bind=engine))
+con = engine.connect()
+metadata = db.MetaData()
+money = db.Table(
+    'accounts',
+    metadata,
+    Column('name', String, primary_key = True),
+    Column('balance', Float),
+    Column('lastUpdated', String),
+)
 
 names = [name.strip() for name in accountNames.split(";")]
 thresholds = [val.strip() for val in thresholdValues.split(";")]
@@ -55,23 +68,34 @@ def setupDB():
             );
         """)
 
-def updateAccountToDB(name, amount):
+def updateAccountToDB(name, amount, new=True):
     timestamp = datetime.datetime.now(tz=pytz.timezone('America/Los_Angeles')).strftime('%Y-%m-%d %H:%M:%S')
     sql = 'INSERT or REPLACE INTO ACCOUNTS (name, balance, lastUpdated) VALUES(?, ?, ?)'
-    data = (name, amount, timestamp)
+    # data = (name, amount, timestamp)
     logging.info('Inserting with sql: {} with data: {}'.format(sql, data))
-    with con:
-        con.execute(sql, data)
+    # with con:
+    #     con.execute(sql, data)
+
+    if new:
+        query = db.insert(money).values(name=name, balance=amount, lastUpdated=timestamp)
+    else:
+        query = db.update(money).values(name=name, balance=amount, lastUpdated=timestamp)
+    connection.execute(query)
 
 def getAccountBalanceFromDB(name):
-    sql = 'SELECT * FROM accounts where name = "{}"'.format(name)
+    # sql = 'SELECT * FROM accounts where name = "{}"'.format(name)
     logging.info('Reading with sql: {}'.format(sql))
-    with con:
-        result = con.execute(sql)
+    # with con:
+    #     result = con.execute(sql)
+    #
+    #     for row in result:
+    #         logging.info(row)
+    #         return row[1]
 
-        for row in result:
-            logging.info(row)
-            return row[1]
+    query = db.select([money]).where(money.columns.name == name)
+    result = connection.execute(query)
+    print(result)
+    return result
 
 def mintLogin():
     logging.info('Logging in to Mint account')
@@ -159,9 +183,12 @@ for account in accountsToCheck:
         raise ValueError('Cannot get balance from Mint')
 
     logging.info('New balance: {}'.format(accountNewBalance))
-    updateAccountToDB(name, accountNewBalance)
+
     if not accountOldBalance:
+        updateAccountToDB(name, accountNewBalance)
         continue
+    else:
+        updateAccountToDB(name, accountNewBalance, False)
 
     if (accountNewBalance - accountOldBalance) >= float(threshold):
         sendEmail(name, fromEmail, fromEmailPassword, toEmail, message, number)
