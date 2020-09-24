@@ -32,7 +32,7 @@ context = ssl.create_default_context()
 # con = sl.connect('money.db')
 # new db
 engine = db.create_engine(os.getenv("DATABASE_URL"))
-db = scoped_session(sessionmaker(bind=engine))
+db = db.scoped_session(sessionmaker(bind=engine))
 con = engine.connect()
 metadata = db.MetaData()
 money = db.Table(
