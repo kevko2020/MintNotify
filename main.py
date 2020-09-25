@@ -1,11 +1,12 @@
 import mintapi
 import os
 import smtplib, ssl
-import sqlite3 as sl
 import datetime
 import pytz
 import logging
 import sqlalchemy as db
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 # Env Vars
 accountNames = os.environ.get('ACCOUNT_NAMES', None)
@@ -29,18 +30,16 @@ folderName = os.path.join(dirname, 'session')
 port = 465  # For SSL
 context = ssl.create_default_context()
 
-# con = sl.connect('money.db')
 # new db
-engine = db.create_engine(os.getenv("DATABASE_URL"))
-db = db.scoped_session(sessionmaker(bind=engine))
+engine = db.create_engine(os.environ['DATABASE_URL'])
 con = engine.connect()
 metadata = db.MetaData()
 money = db.Table(
     'accounts',
     metadata,
-    Column('name', String, primary_key = True),
-    Column('balance', Float),
-    Column('lastUpdated', String),
+    db.Column('name', db.String, primary_key=True),
+    db.Column('balance', db.Float),
+    db.Column('lastupdated', db.String),
 )
 
 names = [name.strip() for name in accountNames.split(";")]
@@ -56,46 +55,22 @@ for i in range(len(names)):
     messages[i],
     numbers[i])]
 
-def setupDB():
-    logging.info('Creating table in DB')
-
-    with con:
-        con.execute("""
-            CREATE TABLE IF NOT EXISTS ACCOUNTS (
-                name TEXT NOT NULL PRIMARY KEY,
-                balance DECIMAL,
-                lastUpdated TEXT
-            );
-        """)
-
-def updateAccountToDB(name, amount, new=True):
+def updateAccountToDB(name, amount, new):
     timestamp = datetime.datetime.now(tz=pytz.timezone('America/Los_Angeles')).strftime('%Y-%m-%d %H:%M:%S')
-    sql = 'INSERT or REPLACE INTO ACCOUNTS (name, balance, lastUpdated) VALUES(?, ?, ?)'
-    # data = (name, amount, timestamp)
-    logging.info('Inserting with sql: {} with data: {}'.format(sql, data))
-    # with con:
-    #     con.execute(sql, data)
-
+    logging.info('Inserting balance {} for {} to DB'.format(amount, name))
     if new:
-        query = db.insert(money).values(name=name, balance=amount, lastUpdated=timestamp)
+        query = db.insert(money).values(name=name, balance=amount, lastupdated=timestamp)
     else:
-        query = db.update(money).values(name=name, balance=amount, lastUpdated=timestamp)
-    connection.execute(query)
+        query = db.update(money).values(name=name, balance=amount, lastupdated=timestamp)
+    con.execute(query)
 
 def getAccountBalanceFromDB(name):
-    # sql = 'SELECT * FROM accounts where name = "{}"'.format(name)
-    logging.info('Reading with sql: {}'.format(sql))
-    # with con:
-    #     result = con.execute(sql)
-    #
-    #     for row in result:
-    #         logging.info(row)
-    #         return row[1]
-
+    logging.info('Getting balance for account: {} from DB'.format(name))
     query = db.select([money]).where(money.columns.name == name)
-    result = connection.execute(query)
-    print(result)
-    return result
+    result = con.execute(query)
+    for row in result:
+        logging.info('Got row: '.format(row))
+        return row[1]
 
 def mintLogin():
     logging.info('Logging in to Mint account')
@@ -165,7 +140,6 @@ def sendEmail(accountName, fromEmail, password, toEmail, message, number):
         server.sendmail(fromEmail, toEmail, processedMessage.as_string())
 
 
-setupDB()
 mint = mintLogin()
 accounts = mint.get_accounts()
 mint.close()
@@ -185,7 +159,7 @@ for account in accountsToCheck:
     logging.info('New balance: {}'.format(accountNewBalance))
 
     if not accountOldBalance:
-        updateAccountToDB(name, accountNewBalance)
+        updateAccountToDB(name, accountNewBalance, True)
         continue
     else:
         updateAccountToDB(name, accountNewBalance, False)
