@@ -6,8 +6,8 @@ Hosted on Heroku with a scheduler.
 # Current Savings Goals
 1. Max out 401k - 19.5k
 2. Max out HSA - $3.5k
-4. Max out Roth or backdoor Roth - $6k
+4. Max out Roth IRA or backdoor Roth IRA - $6k
 3. Max out ESPP
-4. Put as much as possible in mega backdoor roth - $33.5k
+4. Put as much as possible in mega backdoor roth - $33.5k max
 5. Adjust above to make sure paycheck is just enough for necessities.
-6. FIRE? 
+6. [FIRE](https://en.wikipedia.org/wiki/FIRE_movement)? 
