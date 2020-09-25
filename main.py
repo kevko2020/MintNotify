@@ -5,6 +5,7 @@ import datetime
 import pytz
 import logging
 import sqlalchemy as db
+from sqlalchemy.orm import scoped_session, sessionmaker
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
@@ -31,8 +32,9 @@ port = 465  # For SSL
 context = ssl.create_default_context()
 
 # new db
-engine = db.create_engine(os.environ['DATABASE_URL'])
-con = engine.connect()
+engine = db.create_engine('postgresql://kko:@localhost/money') #os.getenv("DATABASE_URL")
+# db = db.scoped_session(sessionmaker(bind=engine))
+con = scoped_session(sessionmaker(bind=engine)) #engine.connect()
 metadata = db.MetaData()
 money = db.Table(
     'accounts',
@@ -57,19 +59,20 @@ for i in range(len(names)):
 
 def updateAccountToDB(name, amount, new):
     timestamp = datetime.datetime.now(tz=pytz.timezone('America/Los_Angeles')).strftime('%Y-%m-%d %H:%M:%S')
-    logging.info('Inserting balance {} for {} to DB'.format(amount, name))
+    logging.info('Inserting balance {} for {}'.format(amount, name))
     if new:
         query = db.insert(money).values(name=name, balance=amount, lastupdated=timestamp)
     else:
-        query = db.update(money).values(name=name, balance=amount, lastupdated=timestamp)
+        query = db.update(money).values(balance=amount).where(money.columns.name == name)
     con.execute(query)
+    con.commit()
 
 def getAccountBalanceFromDB(name):
-    logging.info('Getting balance for account: {} from DB'.format(name))
+    logging.info('Getting balance for account: {}'.format(name))
     query = db.select([money]).where(money.columns.name == name)
     result = con.execute(query)
     for row in result:
-        logging.info('Got row: '.format(row))
+        logging.info(row)
         return row[1]
 
 def mintLogin():
@@ -97,7 +100,7 @@ def mintLogin():
     imap_folder='INBOX',  # IMAP folder that receives MFA email
     wait_for_sync=True,  # do not wait for accounts to sync
     wait_for_sync_timeout=300,  # number of seconds to wait for sync
-    use_chromedriver_on_path=True,  # True will use a system provided chromedriver binary that
+    use_chromedriver_on_path=False,  # True will use a system provided chromedriver binary that
                                      # is on the PATH (instead of downloading the latest version)
     )
 
@@ -139,6 +142,10 @@ def sendEmail(accountName, fromEmail, password, toEmail, message, number):
         server.login(fromEmail, password)
         server.sendmail(fromEmail, toEmail, processedMessage.as_string())
 
+
+getAccountBalanceFromDB('test')
+updateAccountToDB('test', 3.0, False)
+getAccountBalanceFromDB('test')
 
 mint = mintLogin()
 accounts = mint.get_accounts()
