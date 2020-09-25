@@ -43,6 +43,8 @@ money = db.Table(
     db.Column('balance', db.Float),
     db.Column('lastupdated', db.String),
 )
+con.commit()
+print('created db')
 
 names = [name.strip() for name in accountNames.split(";")]
 thresholds = [val.strip() for val in thresholdValues.split(";")]
@@ -142,10 +144,6 @@ def sendEmail(accountName, fromEmail, password, toEmail, message, number):
         server.login(fromEmail, password)
         server.sendmail(fromEmail, toEmail, processedMessage.as_string())
 
-
-getAccountBalanceFromDB('test')
-updateAccountToDB('test', 3.0, False)
-getAccountBalanceFromDB('test')
 
 mint = mintLogin()
 accounts = mint.get_accounts()
