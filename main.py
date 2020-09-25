@@ -32,7 +32,7 @@ port = 465  # For SSL
 context = ssl.create_default_context()
 
 # new db
-engine = db.create_engine('postgresql://kko:@localhost/money') #os.getenv("DATABASE_URL")
+engine = db.create_engine(os.environ.get('DATABASE_URL')) #os.getenv("DATABASE_URL")
 # db = db.scoped_session(sessionmaker(bind=engine))
 con = scoped_session(sessionmaker(bind=engine)) #engine.connect()
 metadata = db.MetaData()
