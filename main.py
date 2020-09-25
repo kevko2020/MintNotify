@@ -36,13 +36,13 @@ engine = db.create_engine(os.environ.get('DATABASE_URL')) #os.getenv("DATABASE_U
 # db = db.scoped_session(sessionmaker(bind=engine))
 con = scoped_session(sessionmaker(bind=engine)) #engine.connect()
 metadata = db.MetaData()
-# money = db.Table(
-#     'accounts',
-#     metadata,
-#     db.Column('name', db.String, primary_key=True),
-#     db.Column('balance', db.Float),
-#     db.Column('lastupdated', db.String),
-# )
+money = db.Table(
+    'accounts',
+    metadata,
+    # db.Column('name', db.String, primary_key=True),
+    # db.Column('balance', db.Float),
+    # db.Column('lastupdated', db.String),
+)
 
 names = [name.strip() for name in accountNames.split(";")]
 thresholds = [val.strip() for val in thresholdValues.split(";")]
