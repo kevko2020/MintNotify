@@ -39,9 +39,9 @@ metadata = db.MetaData()
 money = db.Table(
     'accounts',
     metadata,
-    # db.Column('name', db.String, primary_key=True),
-    # db.Column('balance', db.Float),
-    # db.Column('lastupdated', db.String),
+    db.Column('name', db.String, primary_key=True),
+    db.Column('balance', db.Float),
+    db.Column('lastupdated', db.String),
 )
 
 names = [name.strip() for name in accountNames.split(";")]
