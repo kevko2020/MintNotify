@@ -63,7 +63,7 @@ def updateAccountToDB(name, amount, new):
     if new:
         query = db.insert(money).values(name=name, balance=amount, lastupdated=timestamp)
     else:
-        query = db.update(money).values(balance=amount).where(money.columns.name == name)
+        query = db.update(money).values(balance=amount, lastupdated=timestamp).where(money.columns.name == name)
     con.execute(query)
     con.commit()
 
