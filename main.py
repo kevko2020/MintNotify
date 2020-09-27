@@ -169,5 +169,3 @@ for account in accountsToCheck:
 
     if (accountNewBalance - accountOldBalance) >= float(threshold):
         sendEmail(name, fromEmail, fromEmailPassword, toEmail, message, number)
-
-sendEmail('test', fromEmail, fromEmailPassword, fromEmail, 'ran successfully', '')
