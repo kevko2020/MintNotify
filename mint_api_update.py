@@ -1,3 +1,5 @@
+# based on https://github.com/dan-v/mint-bitcoin-sync
+
 import json
 import logging
 
