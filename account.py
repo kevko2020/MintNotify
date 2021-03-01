@@ -14,7 +14,11 @@ class Account:
         return self.threshold
 
     def getMessage(self):
+        if not self.message:
+            return ""
         return self.message
 
     def getNumber(self):
+        if not self.number:
+            return ""
         return self.number

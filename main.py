@@ -18,10 +18,10 @@ mintPassword = os.environ.get("MINT_PASSWORD", "password")
 mfaToken = os.environ.get("MFA_TOKEN", "token")
 
 # Optional
-accountNames = os.environ.get("ACCOUNT_NAMES")
-thresholdValues = os.environ.get("THRESHOLD_VALUES")
-accountMessages = os.environ.get("ACCOUNT_MESSAGES")
-accountContacts = os.environ.get("ACCOUNT_CONTACTS")
+accountNames = os.environ.get("ACCOUNT_NAMES", "")
+thresholdValues = os.environ.get("THRESHOLD_VALUES", "")
+accountMessages = os.environ.get("ACCOUNT_MESSAGES", "")
+accountContacts = os.environ.get("ACCOUNT_CONTACTS", "")
 fromEmail = os.environ.get("FROM_EMAIL")
 fromEmailPassword = os.environ.get("FROM_EMAIL_PASSWORD")
 toEmail = os.environ.get("TO_EMAIL")
@@ -54,18 +54,19 @@ money = db.Table(
     db.Column("lastupdated", db.String),
 )
 
-names = [name.strip() for name in accountNames.split(";")] if accountNames else []
-thresholds = [val.strip() for val in thresholdValues.split(";")] if thresholdValues else []
-messages = [msg.strip() for msg in accountMessages.split(";")] if accountMessages else []
-numbers = [number.strip() for number in accountContacts.split(";")] if accountContacts else []
-cryptoNames = [name.strip() for name in cryptoNames.split(";")] if cryptoNames else []
-cryptoAmounts = [amount.strip() for amount in cryptoAmounts.split(";")] if cryptoAmounts else []
+names = [name.strip() for name in accountNames.split(";")]
+thresholds = [val.strip() for val in thresholdValues.split(";")]
+messages = [msg.strip() for msg in accountMessages.split(";")]
+numbers = [number.strip() for number in accountContacts.split(";")]
+cryptoNames = [name.strip() for name in cryptoNames.split(";")]
+cryptoAmounts = [amount.strip() for amount in cryptoAmounts.split(";")]
 
 accountsToCheck = []
 for i in range(len(names)):
-    accountsToCheck += [
-        Account(names[i], float(thresholds[i]), messages[i], numbers[i])
-    ]
+    if names[i]:
+        accountsToCheck += [
+            Account(names[i], float(thresholds[i]), messages[i], numbers[i])
+        ]
 
 cryptos = {}
 for i in range(len(cryptoNames)):
