@@ -188,7 +188,7 @@ def getCryptoPrice(crypto):
 def updateCrypto(cryptos):
     for name, amount in cryptos.items():
         for account in accounts:
-            if account["accountName"] == name:
+            if account["accountName"] == name and account["accountType"] == "OtherPropertyAccount":
                 mint.set_property_account_value(account, getCryptoPrice(name) * amount)
                 break
 
