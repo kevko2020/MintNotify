@@ -215,7 +215,10 @@ def checkAccounts(accounts):
             updateAccountToDB(name, accountNewBalance, False)
 
         if (accountNewBalance - accountOldBalance) >= float(threshold):
-            sendEmail(name, fromEmail, fromEmailPassword, toEmail, message, number)
+            try:
+                sendEmail(name, fromEmail, fromEmailPassword, toEmail, message, number)
+            except Exception:
+                logging.error('Failed to log in')
 
 
 # Login and check accounts
