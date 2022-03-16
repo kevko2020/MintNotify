@@ -226,6 +226,7 @@ mint = mintLogin()
 
 logging.info('Getting account info from mint...')
 accounts = mint.get_accounts()
+logging.info(accounts)
 
 logging.info('Checking account for changes...')
 checkAccounts(accounts)
