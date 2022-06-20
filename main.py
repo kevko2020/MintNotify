@@ -1,4 +1,4 @@
-from mint_api_update import Mint
+from mintapi import Mint
 from account import Account
 import os
 import smtplib, ssl
@@ -10,6 +10,10 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import requests
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Env Vars
 # Required
@@ -42,8 +46,13 @@ port = 465  # For SSL
 context = ssl.create_default_context()
 
 # db setup
-engine = db.create_engine(os.environ.get("DATABASE_URL", "postgres://kko@/money"))
+engine = db.create_engine(os.environ.get("DATABASE_URL", "postgresql://ok@/money"))
 con = scoped_session(sessionmaker(bind=engine))
+
+engine.execute('CREATE TABLE IF NOT EXISTS "accounts" ('
+               'name VARCHAR NOT NULL,'
+               'balance FLOAT,'
+               'lastupdated VARCHAR);')
 
 metadata = db.MetaData()
 money = db.Table(
@@ -135,7 +144,7 @@ def mintLogin():
 def getAccountBalanceFromMint(name, accounts):
     logging.info("Getting account with name: {}".format(name))
     for account in accounts:
-        if account["accountName"] == name:
+        if account["name"] == name:
             return account["currentBalance"]
 
 
@@ -188,7 +197,7 @@ def getCryptoPrice(crypto):
 def updateCrypto(cryptos):
     for name, amount in cryptos.items():
         for account in accounts:
-            if account["accountName"] == name and account["accountType"] == "OtherPropertyAccount":
+            if account["name"] == name and account["accountType"] == "OtherPropertyAccount":
                 mint.set_property_account_value(account, getCryptoPrice(name) * amount)
                 break
 
@@ -225,7 +234,7 @@ def checkAccounts(accounts):
 mint = mintLogin()
 
 logging.info('Getting account info from mint...')
-accounts = mint.get_accounts()
+accounts = mint.get_account_data()
 
 logging.info('Checking account for changes...')
 checkAccounts(accounts)
