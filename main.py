@@ -122,7 +122,7 @@ def mintLogin():
         # if mintapi detects an MFA request, it will trigger the requested method
         # and prompt on the command line.
         mfa_token=mfaToken,
-        headless=False,  # Whether the chromedriver should work without opening a
+        headless=True,  # Whether the chromedriver should work without opening a
         # visible window (useful for server-side deployments)
         mfa_input_callback=None,  # A callback accepting a single argument (the prompt)
         # which returns the user-inputted 2FA code. By default
@@ -137,7 +137,7 @@ def mintLogin():
         imap_folder="INBOX",  # IMAP folder that receives MFA email
         wait_for_sync=True,  # do not wait for accounts to sync
         wait_for_sync_timeout=600,  # number of seconds to wait for sync
-        use_chromedriver_on_path=False,  # True will use a system provided chromedriver binary that
+        use_chromedriver_on_path=True,  # True will use a system provided chromedriver binary that
         # is on the PATH (instead of downloading the latest version)
     )
 
