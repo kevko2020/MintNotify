@@ -5,7 +5,7 @@ filelock==3.0.12
 future==0.18.2
 idna==2.10
 lxml==4.6.2
-mintapi==2.1
+mintapi==2.7
 mock==4.0.3
 numpy==1.20.1
 oathtool==2.3.0
